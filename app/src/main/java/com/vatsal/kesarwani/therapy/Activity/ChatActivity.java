@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +66,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+import hani.momanii.supernova_emoji_library.emoji.Emojicon;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -75,8 +79,11 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private Map<String, Object> map;
     private Map<String, Object> map1;
-    private ImageButton send;
-    private EditText text;
+    private ImageButton send , camera;
+    private ImageView emoji;
+    private View rootview;
+    private EmojIconActions emojIcon;
+    private EmojiconEditText text;
     private RecyclerView chats;
     private MessageAdapter adapter;
     private ArrayList<MessageModel> list;
@@ -115,6 +122,10 @@ public class ChatActivity extends AppCompatActivity {
 
         dialog = new ViewDialog(this);
         init();
+        rootview = findViewById(R.id.rootview);
+        emoji = findViewById(R.id.emoji);
+        emojIcon = new EmojIconActions(this,rootview,text,emoji);
+        emojIcon.ShowEmojIcon();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -123,6 +134,14 @@ public class ChatActivity extends AppCompatActivity {
         userprofile= findViewById(R.id.userprofile);
         userdp = findViewById(R.id.profile_image);
         online = findViewById(R.id.Onlineuser);
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachPicture();
+            }
+        });
+
         userprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -453,10 +472,7 @@ public class ChatActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         }
-        else if(item.getItemId() == R.id.attach){
-            attachPicture();
-            return true;
-        }
+
 //        else if(item.getItemId() == R.id.profile){
 //            Intent intent = new Intent(getApplicationContext(),CureProfile.class);
 //            intent.putExtra("mail",mail);
@@ -663,6 +679,7 @@ public class ChatActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         send = findViewById(R.id.send);
+        camera = findViewById(R.id.camera);
         text = findViewById(R.id.text_to_send);
         chats = findViewById(R.id.chats);
         chats.setHasFixedSize(true);
